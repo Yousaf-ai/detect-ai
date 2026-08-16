@@ -1,69 +1,126 @@
-import Image from "next/image";
+import { DetectorApp } from "@/components/detector-app";
+import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
+    <>
+      <section className="hero">
+        <div className="hero-content glass-card">
+          <p className="eyebrow">On-device forensics</p>
+          <h1>
+            Is this media <span className="gradient-text">authentic</span>?
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="hero-lead">
+            Drop an image or a video up to one minute. Classifiers, frequency analysis, and provenance
+            checks run in your browser. Nothing is uploaded, and there is no account.
+          </p>
+          <div className="hero-actions">
+            <a className="btn btn-primary" href="#detect">
+              Analyse a file
+            </a>
+            <Link className="btn btn-glass" href="/how-it-works">
+              How the ensemble works
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <div className="stat-row">
+        <div className="stat-pill">
+          <strong>9</strong>
+          <span>layered checks</span>
+        </div>
+        <div className="stat-pill">
+          <strong>0</strong>
+          <span>uploads</span>
+        </div>
+        <div className="stat-pill">
+          <strong>60s</strong>
+          <span>video cap</span>
+        </div>
+      </div>
+
+      <DetectorApp />
+
+      <section className="section">
+        <div className="section-head">
+          <p className="eyebrow">Coverage</p>
+          <h2>Built to catch families of generators, not a logo list</h2>
+          <p className="section-desc">
+            Diffusion images, face-swap deepfakes, and short AI video share artefacts even when the
+            product name is new. The report votes across independent signals instead of a single API.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div className="topic-grid">
+          <article className="topic-card glass-card">
+            <p className="tag">Images</p>
+            <h3>Diffusion and edits</h3>
+            <p>Flux, Midjourney, Firefly, DALL·E, and SDXL-class stills via two image nets plus FFT.</p>
+          </article>
+          <article className="topic-card glass-card">
+            <p className="tag">Faces</p>
+            <h3>Deepfake specialist</h3>
+            <p>A ViT trained on face swaps, used as one vote rather than the whole verdict.</p>
+          </article>
+          <article className="topic-card glass-card">
+            <p className="tag">Video</p>
+            <h3>Sora-class clips</h3>
+            <p>Up to twelve sampled frames, temporal jitter, and the same image ensemble on keyframes.</p>
+          </article>
         </div>
-      </main>
-    </div>
+      </section>
+
+      <section className="section">
+        <div className="section-head">
+          <p className="eyebrow">Stack</p>
+          <h2>Quiet technology, shown plainly</h2>
+        </div>
+        <div className="featured-projects">
+          <article className="project-feature glass-card">
+            <div className="project-visual visual-ios">
+              <span className="visual-label">On device</span>
+            </div>
+            <div className="project-body">
+              <p className="tag">Privacy</p>
+              <h3>The file never leaves the tab</h3>
+              <p>
+                Decode, EXIF, C2PA markers, FFT, and ONNX classifiers run locally. First visit may
+                download quantized models from Hugging Face into the browser cache.
+              </p>
+              <ul className="tech-list">
+                <li>Next.js</li>
+                <li>Transformers.js</li>
+                <li>WebGPU</li>
+                <li>Canvas FFT</li>
+              </ul>
+            </div>
+          </article>
+          <article className="project-feature glass-card">
+            <div className="project-visual visual-ml">
+              <span className="visual-label">Ensemble</span>
+            </div>
+            <div className="project-body">
+              <p className="tag">Models</p>
+              <h3>Three classifiers, then rules</h3>
+              <p>
+                Distilled AI-vs-real ViT, an SDXL-oriented detector, and a deepfake ViT. An aggregator
+                maps votes plus forensics into Authentic, Likely AI, AI-generated, or Undetermined.
+              </p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="limits" className="section">
+        <div className="glass-card" style={{ padding: "1.5rem" }}>
+          <p className="eyebrow">Limits</p>
+          <h2 style={{ margin: "0 0 0.75rem" }}>No detector catches every generator</h2>
+          <div className="project-learned">
+            New models, heavy social compression, and stripped metadata can produce false confidence.
+            This report is a forensic estimate for a portfolio tool — not legal proof.
+          </div>
+        </div>
+      </section>
+    </>
   );
 }
