@@ -4,6 +4,9 @@ import type { NextConfig } from "next";
 const empty = path.join(__dirname, "lib/empty.ts");
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [{ source: "/how-it-works", destination: "/", permanent: true }];
+  },
   serverExternalPackages: [
     "@huggingface/transformers",
     "onnxruntime-node",

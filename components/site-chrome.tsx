@@ -1,24 +1,10 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-const LINKS = [
-  { href: "/", label: "Detect" },
-  { href: "/how-it-works", label: "How it works" },
-  { href: "/#limits", label: "Limits" },
-];
-
 export function SiteChrome({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-  const [open, setOpen] = useState(false);
   const [progress, setProgress] = useState(0);
   const [showTop, setShowTop] = useState(false);
-
-  useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
 
   useEffect(() => {
     const onScroll = () => {
@@ -44,45 +30,15 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
       </div>
 
       <header className="site-header glass">
-        <nav className={open ? "nav open" : "nav"} aria-label="Primary">
-          {LINKS.map((link) => {
-            const active =
-              link.href === "/"
-                ? pathname === "/"
-                : link.href.startsWith("/how-it-works")
-                  ? pathname.startsWith("/how-it-works")
-                  : false;
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={active ? "active" : undefined}
-                onClick={() => setOpen(false)}
-              >
-                {link.label}
-              </Link>
-            );
-          })}
-        </nav>
-        <button
-          className="menu-toggle"
-          type="button"
-          aria-label={open ? "Close menu" : "Open menu"}
-          aria-expanded={open}
-          onClick={() => setOpen((value) => !value)}
-        >
-          <span />
-          <span />
-        </button>
+        <a className="brand" href="/">
+          Detect AI
+        </a>
       </header>
 
       <main className="page-main">{children}</main>
 
       <footer className="site-footer">
-        <p>
-          On-device forensics · files stay in this tab ·{" "}
-          <Link href="/how-it-works">how it works</Link>
-        </p>
+        <p>Portfolio forensic tool</p>
       </footer>
 
       <button

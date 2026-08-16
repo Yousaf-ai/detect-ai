@@ -152,13 +152,9 @@ export function DetectorApp() {
             <img className="dropzone-preview" src={preview} alt="Selected media preview" />
           )
         ) : null}
-        <p className="eyebrow">Drop media</p>
-        <h2 style={{ margin: 0, fontSize: "1.35rem" }}>
-          Image or video, up to one minute
-        </h2>
-        <p className="section-desc">
-          JPG, PNG, WebP, GIF, MP4, MOV, WebM. Nothing leaves this device.
-        </p>
+        <p className="eyebrow">File</p>
+        <h2 style={{ margin: 0, fontSize: "1.35rem" }}>Drop a file here</h2>
+        <p className="section-desc">JPG, PNG, WebP, GIF, MP4, MOV, or WebM</p>
         <span className="btn btn-primary">
           {busy ? "Checking…" : "Choose a file"}
         </span>
