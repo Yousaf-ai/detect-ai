@@ -9,7 +9,7 @@ export default function Home() {
             Is this media <span className="gradient-text">authentic</span>?
           </h1>
           <p className="hero-lead">
-            Drop an image or a one-minute video. Checks run in this tab — the file is never uploaded.
+            Check a photo or a one-minute clip in this tab. The file never leaves your device.
           </p>
         </div>
       </section>

@@ -65,7 +65,7 @@ async function loadPipeline(
           if (info.status === "ready") onStatus?.("Running detector…");
         },
       }),
-      45_000,
+      90_000,
     );
 
     const run: PipelineFn = async (canvas) => {

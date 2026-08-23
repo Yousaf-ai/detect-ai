@@ -18,8 +18,6 @@ const INITIAL: ScanProgress[] = [
   { id: "noise", label: "Noise residual", status: "pending" },
   { id: "temporal", label: "Temporal consistency", status: "pending" },
   { id: "distilled", label: "AI vision model", status: "pending" },
-  { id: "sdxl", label: "SDXL detector", status: "pending" },
-  { id: "deepfake", label: "Deepfake net", status: "pending" },
 ];
 
 export function initialEngines(): ScanProgress[] {
@@ -119,9 +117,6 @@ export async function runScan(file: File, callbacks: ScanCallbacks): Promise<Sca
       distilled == null ? "Model unavailable — using forensics" : `${Math.round(distilled * 100)}% AI`,
     ),
   );
-
-  emit(mark(engines, "sdxl", "skipped", "Optional extra model skipped so you get a result faster"));
-  emit(mark(engines, "deepfake", "skipped", "Optional extra model skipped so you get a result faster"));
 
   if (kind === "video" && distilled != null) {
     frames = frames.map((frame) => ({ ...frame, ai: distilled }));

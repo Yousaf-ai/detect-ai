@@ -1,12 +1,13 @@
 "use client";
 
 import { FftHeatmap } from "@/components/fft-heatmap";
+import { fileFromList, validateFile } from "@/lib/ingest/validate";
 import { initialEngines, runScan } from "@/lib/scan";
 import type { ScanProgress, ScanReport, Verdict } from "@/lib/types";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 const ACCEPT =
-  "image/jpeg,image/png,image/webp,image/gif,video/mp4,video/quicktime,video/webm,.jpg,.jpeg,.png,.webp,.gif,.mp4,.mov,.webm";
+  "image/*,video/mp4,video/quicktime,video/webm,.jpg,.jpeg,.png,.webp,.gif,.avif,.heic,.heif,.mp4,.mov,.webm,.m4v";
 
 function verdictCopy(verdict: Verdict): {
   answer: string;
@@ -53,9 +54,16 @@ function statusLabel(status: ScanProgress["status"]) {
   return "Waiting";
 }
 
+function formatSize(bytes: number): string {
+  if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
 export function DetectorApp() {
   const inputRef = useRef<HTMLInputElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  const dragDepth = useRef(0);
+  const busyRef = useRef(false);
   const [hot, setHot] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -63,6 +71,8 @@ export function DetectorApp() {
   const [busy, setBusy] = useState(false);
   const [engines, setEngines] = useState<ScanProgress[]>(initialEngines());
   const [report, setReport] = useState<ScanReport | null>(null);
+
+  busyRef.current = busy;
 
   useEffect(() => {
     return () => {
@@ -92,13 +102,24 @@ export function DetectorApp() {
     ];
   }, [report]);
 
-  async function handleFile(next: File | undefined) {
-    if (!next || busy) return;
+  async function handleFile(next: File | null | undefined) {
+    if (!next || busyRef.current) return;
+
+    try {
+      validateFile(next);
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "This file is not supported.");
+      return;
+    }
+
+    busyRef.current = true;
     setError(null);
     setReport(null);
     setFile(next);
-    if (preview) URL.revokeObjectURL(preview);
-    setPreview(URL.createObjectURL(next));
+    setPreview((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return URL.createObjectURL(next);
+    });
     setBusy(true);
     setEngines(initialEngines());
     try {
@@ -109,59 +130,102 @@ export function DetectorApp() {
         caught instanceof Error ? caught.message : "Could not analyse this file.",
       );
     } finally {
+      busyRef.current = false;
       setBusy(false);
     }
   }
 
+  function resetPicker() {
+    if (inputRef.current) inputRef.current.value = "";
+  }
+
+  useEffect(() => {
+    const onPaste = (event: ClipboardEvent) => {
+      const pasted = fileFromList(event.clipboardData?.files);
+      if (!pasted) return;
+      event.preventDefault();
+      void handleFile(pasted);
+    };
+    window.addEventListener("paste", onPaste);
+    return () => window.removeEventListener("paste", onPaste);
+  }, []);
+
   const copy = report ? verdictCopy(report.verdict) : null;
 
   return (
-    <section id="detect" className="section">
-      <div
+    <section id="detect" className="section detect-section">
+      <label
         className={hot ? "dropzone glass-card is-hot" : "dropzone glass-card"}
-        onDragOver={(event) => {
+        onDragEnter={(event) => {
           event.preventDefault();
+          dragDepth.current += 1;
           setHot(true);
         }}
-        onDragLeave={() => setHot(false)}
+        onDragOver={(event) => {
+          event.preventDefault();
+          event.dataTransfer.dropEffect = "copy";
+        }}
+        onDragLeave={(event) => {
+          event.preventDefault();
+          dragDepth.current = Math.max(0, dragDepth.current - 1);
+          if (dragDepth.current === 0) setHot(false);
+        }}
         onDrop={(event) => {
           event.preventDefault();
+          dragDepth.current = 0;
           setHot(false);
-          void handleFile(event.dataTransfer.files[0]);
-        }}
-        onClick={() => {
-          if (!busy) inputRef.current?.click();
-        }}
-        role="button"
-        tabIndex={0}
-        onKeyDown={(event) => {
-          if (event.key === "Enter" || event.key === " ") inputRef.current?.click();
+          const dropped =
+            fileFromList(event.dataTransfer.files) ??
+            fileFromList(event.dataTransfer.items);
+          if (!dropped) {
+            setError("Drop a file from your computer, not an image from a webpage.");
+            return;
+          }
+          void handleFile(dropped);
         }}
       >
         <input
           ref={inputRef}
           type="file"
           accept={ACCEPT}
-          onChange={(event) => void handleFile(event.target.files?.[0])}
+          disabled={busy}
+          onClick={resetPicker}
+          onChange={(event) => {
+            const chosen = fileFromList(event.target.files);
+            resetPicker();
+            void handleFile(chosen);
+          }}
         />
         {preview ? (
           file?.type.startsWith("video/") ? (
             <video className="dropzone-preview" src={preview} muted playsInline />
           ) : (
             // eslint-disable-next-line @next/next/no-img-element
-            <img className="dropzone-preview" src={preview} alt="Selected media preview" />
+            <img className="dropzone-preview" src={preview} alt="" />
           )
-        ) : null}
-        <p className="eyebrow">File</p>
-        <h2 style={{ margin: 0, fontSize: "1.35rem" }}>Drop a file here</h2>
-        <p className="section-desc">JPG, PNG, WebP, GIF, MP4, MOV, or WebM</p>
+        ) : (
+          <span className="dropzone-icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" fill="none">
+              <rect x="8" y="12" width="32" height="24" rx="4" stroke="currentColor" strokeWidth="2" />
+              <circle cx="17" cy="21" r="3" fill="currentColor" />
+              <path d="M10 32l8-8 5 5 6-7 9 10" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+            </svg>
+          </span>
+        )}
+        <p className="eyebrow">{file ? "Selected" : "Upload"}</p>
+        <h2>{file ? file.name : "Drop a photo or video"}</h2>
+        <p className="section-desc">
+          {file
+            ? `${formatSize(file.size)} · ${busy ? "Checking…" : "Click to replace"}`
+            : "JPG, PNG, WebP, GIF, MP4, MOV, or WebM · or paste from the clipboard"}
+        </p>
         <span className="btn btn-primary">
-          {busy ? "Checking…" : "Choose a file"}
+          {busy ? "Checking…" : file ? "Choose another file" : "Choose a file"}
         </span>
-      </div>
+      </label>
 
       {error ? (
-        <p className="project-learned" style={{ marginTop: "1rem" }}>
+        <p className="upload-error" role="alert">
           {error}
         </p>
       ) : null}

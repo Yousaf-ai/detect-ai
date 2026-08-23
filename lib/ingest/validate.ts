@@ -3,9 +3,11 @@ export const IMAGE_TYPES = new Set([
   "image/png",
   "image/webp",
   "image/gif",
+  "image/avif",
   "image/heic",
   "image/heif",
   "image/jpg",
+  "image/pjpeg",
 ]);
 
 export const VIDEO_TYPES = new Set([
@@ -25,9 +27,24 @@ export function kindFromFile(file: File): MediaKind | null {
   if (IMAGE_TYPES.has(file.type)) return "image";
   if (VIDEO_TYPES.has(file.type)) return "video";
   const name = file.name.toLowerCase();
-  if (/\.(jpe?g|png|webp|gif|heic|heif)$/.test(name)) return "image";
+  if (/\.(jpe?g|png|webp|gif|avif|heic|heif)$/.test(name)) return "image";
   if (/\.(mp4|mov|webm|m4v)$/.test(name)) return "video";
   return null;
+}
+
+export function fileFromList(list: FileList | DataTransferItemList | null | undefined): File | null {
+  if (!list || list.length === 0) return null;
+  if (typeof DataTransferItemList !== "undefined" && list instanceof DataTransferItemList) {
+    for (let i = 0; i < list.length; i++) {
+      const item = list[i];
+      if (item?.kind === "file") {
+        const file = item.getAsFile();
+        if (file) return file;
+      }
+    }
+    return null;
+  }
+  return (list as FileList)[0] ?? null;
 }
 
 export function validateFile(file: File): { kind: MediaKind } {
