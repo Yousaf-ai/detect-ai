@@ -20,8 +20,8 @@
   --max: 1080px;
   --font: var(--font-inter), "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
   --section-space: 3.25rem;
-  --header-offset: 6.5rem;
-  --header-gap: 1.5rem;
+  --header-offset: 0.75rem;
+  --header-gap: 1.75rem;
 }
 
 *,
@@ -1072,9 +1072,9 @@ a.result-module:hover {
 
 @media (max-width: 900px) {
   :root {
-    --header-offset: 4.75rem;
+    --header-offset: 0.5rem;
     --section-space: 2.5rem;
-    --header-gap: 1.25rem;
+    --header-gap: 1.15rem;
   }
 
   .site-header {

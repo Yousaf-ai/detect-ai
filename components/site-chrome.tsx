@@ -29,12 +29,6 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
         <div className="orb orb-c" />
       </div>
 
-      <header className="site-header glass">
-        <a className="brand" href="/">
-          Detect AI
-        </a>
-      </header>
-
       <main className="page-main">{children}</main>
 
       <footer className="site-footer">
